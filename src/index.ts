@@ -62,11 +62,57 @@ export default class WledClient {
     return this.updateState(state);
   }
 
+  public async setColor(color: Led): Promise<void> {
+    const state: PartialWLEDState = {
+      seg: [
+        {
+          col: [[color.r, color.g, color.b]],
+        },
+      ],
+    };
+
+    return this.updateState(state);
+  }
+
+  public setEffect(effect: number): Promise<void>;
+  public setEffect(effect: string): Promise<void>;
+  public async setEffect(effect: string | number): Promise<void> {
+    let effectIndex: number;
+
+    if (typeof effect === 'number') {
+      effectIndex = effect;
+    } else {
+      const effects = await this.getEffects();
+
+      effectIndex = effects.indexOf(effect);
+
+      if (effectIndex === -1) {
+        throw new Error(`Effect "${effect}" not found.`);
+      }
+    }
+
+    const state: PartialWLEDState = {
+      seg: [
+        {
+          fx: effectIndex,
+        },
+      ],
+    };
+
+    return this.updateState(state);
+  }
+
   public updateState(state: PartialWLEDState): Promise<void> {
     return this.apiClient.updateState(state);
   }
 
   // [API] Getters
+
+  public async getLedCount(): Promise<number> {
+    const info = await this.getInfo();
+
+    return info.leds.count;
+  }
 
   public getAllData(): Promise<WLEDFullResponse> {
     return this.apiClient.getAllData();
