@@ -75,16 +75,17 @@ setInterval(() => {
 
 #### Websocket Methods
 
-> These are not necessary to call manually, as they are automatically called when using the `onStateChange` and `onLiveStreamData` methods.
-> However, they can be used to manually connect and disconnect from the WebSocket server.
-
-- `connect(): Promise<void>`: Manually connects to the WebSocket server.
-- `disconnect(): void`: Disconnects from the WebSocket server.
-
 - `triggerWebsocketStateUpdate(): Promise<void>`: Triggers a state update via WebSocket.
 - `triggerWebsocketLiveStream(): Promise<void>`: Triggers a live stream via WebSocket.
 - `onStateChange(callback: WLEDStateCallback): WebsocketAddResponse`: Adds a listener for state changes.
 - `onLiveStreamData(callback: WLEDLiveStreamCallback): WebsocketAddResponse`: Adds a listener for live stream data.
+
+Optional:
+
+- `connect(): Promise<void>`: Manually connects to the WebSocket server.
+- `disconnect(): void`: Disconnects from the WebSocket server.
+  > The connect and disconnect functions are not necessary to call manually, as they are automatically called when using the `onStateChange` and `onLiveStreamData` methods.
+  > However, they can be used to manually connect and disconnect from the WebSocket server.
 
 #### DDP Methods
 
