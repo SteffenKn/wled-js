@@ -172,7 +172,11 @@ export default class WledClient {
     return this.websocketClient.onStateChange(callback);
   }
 
-  public onLiveStreamData(callback: WLEDLiveStreamCallback): WebsocketAddResponse {
+  public onLiveStreamData(callback: WLEDLiveStreamCallback, shouldTrigger: boolean = true): WebsocketAddResponse {
+    if (shouldTrigger) {
+      this.triggerWebsocketLiveStream();
+    }
+
     return this.websocketClient.onLiveStreamData(callback);
   }
 
