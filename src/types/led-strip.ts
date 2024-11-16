@@ -1,7 +1,7 @@
-export type Color = {
+export type Led = {
   r: number;
   g: number;
   b: number;
 };
 
-export type LedStrip = Color[];
+export type LedStrip = Led[];
