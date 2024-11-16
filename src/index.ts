@@ -133,4 +133,4 @@ export default class WledClient {
   }
 }
 
-export * from './types/wled/index';
+export * from './types/index';
