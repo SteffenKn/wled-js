@@ -56,8 +56,8 @@ export default class WledClient {
 
   // [API] Getters
 
-  public getData(): Promise<WLEDFullResponse> {
-    return this.apiClient.getData();
+  public getAllData(): Promise<WLEDFullResponse> {
+    return this.apiClient.getAllData();
   }
 
   public getState(): Promise<WLEDState> {

@@ -17,7 +17,7 @@ export class ApiClient {
     this.ip = ip;
   }
 
-  public async getData(): Promise<WLEDFullResponse> {
+  public async getAllData(): Promise<WLEDFullResponse> {
     const url = this.buildRoute('');
 
     const response = await fetch(url);
