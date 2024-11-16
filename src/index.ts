@@ -42,6 +42,14 @@ export default class WledClient {
 
   // [API] Setters
 
+  public turn(on: boolean): Promise<void> {
+    const state = {
+      on: on,
+    };
+
+    return this.updateState(state);
+  }
+
   public updateState(state: Partial<WLEDState>): Promise<void> {
     return this.apiClient.updateState(state);
   }
