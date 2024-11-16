@@ -23,3 +23,9 @@ export type WLEDState = {
   /** Array of segment configurations */
   seg: WLEDSegment[];
 };
+
+export type PartialWLEDState = DeepPartial<WLEDState>;
+
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};

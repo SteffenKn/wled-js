@@ -5,7 +5,17 @@
 
 import fetch from 'cross-fetch';
 
-import {WLEDFullResponse, WLEDState, WLEDInfo, WLEDNodesResponse, WLEDStateAndInfoResponse, WLEDEffectsResponse, WLEDNetworkResponse, WLEDConfig} from '../types/index';
+import {
+  WLEDFullResponse,
+  WLEDState,
+  WLEDInfo,
+  WLEDNodesResponse,
+  WLEDStateAndInfoResponse,
+  WLEDEffectsResponse,
+  WLEDNetworkResponse,
+  WLEDConfig,
+  PartialWLEDState,
+} from '../types/index';
 
 /**
  * WLEDJsonClient zur Kommunikation mit der WLED JSON API.
@@ -167,7 +177,7 @@ export class ApiClient {
     return state;
   }
 
-  public async updateState(state: Partial<WLEDState>) {
+  public async updateState(state: PartialWLEDState) {
     const url = this.buildRoute('state');
 
     const response = await fetch(url, {

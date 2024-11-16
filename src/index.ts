@@ -13,6 +13,8 @@ import {
   WLEDStateAndInfoResponse,
   LedStrip,
   DdpPacket,
+  Led,
+  PartialWLEDState,
 } from './types/index';
 
 // TODO: Add simple methods for the most common actions.
@@ -52,16 +54,16 @@ export default class WledClient {
     return this.updateState(state);
   }
 
-  public updateState(state: Partial<WLEDState>): Promise<void> {
-    return this.apiClient.updateState(state);
-  }
-
   public setBrightness(brightness: number): Promise<void> {
     const state = {
       bri: Math.min(255, Math.max(0, brightness)),
     };
 
     return this.updateState(state);
+  }
+
+  public updateState(state: PartialWLEDState): Promise<void> {
+    return this.apiClient.updateState(state);
   }
 
   // [API] Getters
