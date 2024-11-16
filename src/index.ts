@@ -74,6 +74,23 @@ export default class WledClient {
     return this.updateState(state);
   }
 
+  public setLight(color: Led, brightness?: number): Promise<void> {
+    const state: PartialWLEDState = {
+      on: true,
+      seg: [
+        {
+          col: [[color.r, color.g, color.b]],
+        },
+      ],
+    };
+
+    if (brightness !== undefined) {
+      state.bri = Math.min(255, Math.max(0, brightness));
+    }
+
+    return this.updateState(state);
+  }
+
   public setEffect(effect: number): Promise<void>;
   public setEffect(effect: string): Promise<void>;
   public async setEffect(effect: string | number): Promise<void> {
