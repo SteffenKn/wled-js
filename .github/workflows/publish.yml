@@ -1,0 +1,190 @@
+name: 'Publish Release'
+
+# To use this workflow:
+# 1. Create a npm token and add it as a repository secret named NPM_TOKEN
+# 2. Make sure GH actions has write access to the repository:  Settings → Actions → General.
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Versions
+        run: |
+          node -v
+          npm -v
+
+      - name: Install
+        run: npm install
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Stash dist
+        uses: actions/upload-artifact@master
+        with:
+          name: dist-${{ matrix.node-version }}-${{ github.run_id }}
+          path: dist/
+
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org/'
+
+      # Parse commit message
+      - name: Check commit message
+        id: check_commit
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B | tr '[:upper:]' '[:lower:]')
+          echo "Commit message (lowercased): $COMMIT_MSG"
+
+          if [[ ! "$COMMIT_MSG" =~ ^🚀\ release\ \[(major|minor|patch)\](\ \(beta\))?$ ]]; then
+            echo "Invalid commit message format. Stopping workflow."
+            exit 1
+          fi
+
+          VERSION_TYPE=$(echo "$COMMIT_MSG" | sed -n 's/^🚀 release \[\(major\|minor\|patch\)\].*/\1/p')
+          IS_BETA=$(echo "$COMMIT_MSG" | grep -o "(beta)" || echo "")
+          echo "Version type: $VERSION_TYPE"
+          echo "Is beta: $IS_BETA"
+
+          echo "version_type=$VERSION_TYPE" >> $GITHUB_OUTPUT
+          echo "is_beta=$IS_BETA" >> $GITHUB_OUTPUT
+
+      # Fetch latest release from npm
+      - name: Get latest release from npm
+        id: get_latest
+        run: |
+          LATEST_VERSION=$(npm show $(node -p "require('./package.json').name") version)
+          echo "Latest version: $LATEST_VERSION"
+          echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+
+      # Handle versioning
+      - name: Handle versioning
+        id: versioning
+        shell: bash
+        run: |
+          VERSION_TYPE=${{ steps.check_commit.outputs.version_type }}
+          IS_BETA=${{ steps.check_commit.outputs.is_beta }}
+          LATEST_VERSION=${{ steps.get_latest.outputs.latest_version }}
+
+          echo "Latest version: $LATEST_VERSION"
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_VERSION"
+
+          echo "Major: $MAJOR, Minor: $MINOR, Patch: $PATCH"
+
+          if [[ "$VERSION_TYPE" == "major" ]]; then
+            MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0
+          elif [[ "$VERSION_TYPE" == "minor" ]]; then
+            MINOR=$((MINOR + 1)); PATCH=0
+          elif [[ "$VERSION_TYPE" == "patch" ]]; then
+            PATCH=$((PATCH + 1))
+          fi
+
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+
+          if [[ -z "$IS_BETA" ]]; then
+            FINAL_VERSION=$NEW_VERSION
+          else
+            EXISTING_BETAS=$(npm show $(node -p "require('./package.json').name") versions 2>/dev/null | grep -E "$NEW_VERSION-beta\.[0-9]+" || true)
+            echo "Existing betas: $EXISTING_BETAS"
+
+            if [[ -z "$EXISTING_BETAS" ]]; then
+              BETA_NUMBER=1
+            else
+              BETA_NUMBER=$(echo "$EXISTING_BETAS" | grep -oP '(?<=-beta\.)\d+' | sort -nr | head -n 1)
+              ((BETA_NUMBER++))
+            fi
+            FINAL_VERSION="$NEW_VERSION-beta.$BETA_NUMBER"
+          fi
+
+          echo "Final version: $FINAL_VERSION"
+          echo "final_version=$FINAL_VERSION" >> $GITHUB_OUTPUT
+
+      # Update package.json
+      - name: Update package.json
+        run: |
+          FINAL_VERSION=${{ steps.versioning.outputs.final_version }}
+          jq --arg version "$FINAL_VERSION" '.version = $version' package.json > package.temp.json
+          mv package.temp.json package.json
+
+      # Commit and push changes
+      - name: Commit and push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add package.json
+          git pull
+          git commit -m "Bump version to ${{ steps.versioning.outputs.final_version }}"
+          git push
+
+      - name: Unstash dist
+        uses: actions/download-artifact@master
+        with:
+          name: dist-22.x-${{ github.run_id }}
+
+      # Publish to npm
+      - name: Publish to npm
+        run: |
+
+          IS_BETA=${{ steps.check_commit.outputs.is_beta }}
+
+          echo "IS_BETA: $IS_BETA"
+
+          if [[ -z "$IS_BETA" ]]; then
+            echo "Publishing regular version: $FINAL_VERSION"
+
+            npm publish --access public
+          else
+            echo "Publishing beta version: $FINAL_VERSION"
+
+            npm publish --tag beta --access public
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+
+      # Create GitHub release
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: 'v${{ steps.versioning.outputs.final_version }}'
+          release_name: 'Release v${{ steps.versioning.outputs.final_version }}'
+          body: 'This is the release v${{ steps.versioning.outputs.final_version }}.'
+          draft: false
+          prerelease: ${{ steps.check_commit.outputs.is_beta != '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
