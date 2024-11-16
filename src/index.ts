@@ -15,6 +15,8 @@ import {
   DdpPacket,
 } from './types/index';
 
+// TODO: Add simple methods for the most common actions.
+
 export default class WledClient {
   private apiClient: ApiClient;
   private websocketClient: WebsocketClient;
