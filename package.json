@@ -1,0 +1,35 @@
+{
+  "name": "wled-js",
+  "version": "0.0.1",
+  "description": "A simple js client for wled",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rm -rf dist && tsc",
+    "lint": "prettier -c ./",
+    "lint:fix": "prettier -w ./",
+    "test": "ts-node ./src/test.ts"
+  },
+  "keywords": [
+    "wled",
+    "client",
+    "api",
+    "json",
+    "ddp",
+    "websocket",
+    "ws",
+    "led",
+    "light"
+  ],
+  "author": "Steffen Knaup",
+  "license": "ISC",
+  "dependencies": {
+    "cross-fetch": "^4.0.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/ws": "^8.5.13",
+    "prettier": "^3.3.3",
+    "ts-node": "^10.9.2"
+  }
+}

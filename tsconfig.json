@@ -1,0 +1,33 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "NodeNext",
+    "rootDir": "src",
+    "outDir": "dist",
+    "alwaysStrict": true,
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": false,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "removeComments": false,
+    "resolveJsonModule": true,
+    "strict": true,
+    "useUnknownInCatchVariables": false,
+    "strictNullChecks": false,
+    "baseUrl": "./src",
+    "paths": {
+      "@types": ["types/index.ts"],
+      "@config": ["config/config.ts"],
+      "@clients": ["clients/index.ts"],
+      "@handler": ["handler/index.ts"],
+      "@utils": ["utils/index.ts"],
+      "@services": ["services/index.ts"]
+    }
+  }
+}

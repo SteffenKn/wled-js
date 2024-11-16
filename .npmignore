@@ -1,0 +1,7 @@
+.github/
+src/
+
+.DS_Store
+package-lock.json
+tsconfig.json
+.prettierrc
