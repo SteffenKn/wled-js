@@ -47,6 +47,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
+    needs: build
 
     steps:
       # Check out the repository
@@ -69,12 +70,12 @@ jobs:
           COMMIT_MSG=$(git log -1 --pretty=%B | tr '[:upper:]' '[:lower:]')
           echo "Commit message (lowercased): $COMMIT_MSG"
 
-          if [[ ! "$COMMIT_MSG" =~ ^🚀\ release\ \[(major|minor|patch)\](\ \(beta\))?$ ]]; then
+          if [[ ! "$COMMIT_MSG" =~ ^(:rocket:|🚀)\ release\ \[(major|minor|patch)\](\ \(beta\))?$ ]]; then
             echo "Invalid commit message format. Stopping workflow."
             exit 1
           fi
 
-          VERSION_TYPE=$(echo "$COMMIT_MSG" | sed -n 's/^🚀 release \[\(major\|minor\|patch\)\].*/\1/p')
+          VERSION_TYPE=$(echo "$COMMIT_MSG" | sed -n 's/^.*\[\(major\|minor\|patch\)\].*/\1/p')
           IS_BETA=$(echo "$COMMIT_MSG" | grep -o "(beta)" || echo "")
           echo "Version type: $VERSION_TYPE"
           echo "Is beta: $IS_BETA"
