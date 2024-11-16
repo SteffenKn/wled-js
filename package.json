@@ -21,7 +21,7 @@
     "light"
   ],
   "author": "Steffen Knaup",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "cross-fetch": "^4.0.0",
     "ws": "^8.18.0"
