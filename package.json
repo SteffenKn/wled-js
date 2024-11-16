@@ -22,6 +22,14 @@
   ],
   "author": "Steffen Knaup",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SteffenKn/wled-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SteffenKn/wled-js/issues"
+  },
+  "homepage": "https://github.com/SteffenKn/wled-js#readme",
   "dependencies": {
     "cross-fetch": "^4.0.0",
     "ws": "^8.18.0"
