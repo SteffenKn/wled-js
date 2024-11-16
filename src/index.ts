@@ -114,6 +114,12 @@ export default class WledClient {
     return info.leds.count;
   }
 
+  public async isOn(): Promise<boolean> {
+    const state = await this.getState();
+
+    return state.on && state.bri > 0;
+  }
+
   public getAllData(): Promise<WLEDFullResponse> {
     return this.apiClient.getAllData();
   }
