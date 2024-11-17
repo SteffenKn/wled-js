@@ -62,6 +62,16 @@ export default class WledClient {
     return this.updateState(state);
   }
 
+  public setBrightnessPercentage(percentage: number): Promise<void> {
+    const percentageToUse = Math.min(100, Math.max(0, percentage));
+
+    const state = {
+      bri: Math.round((percentageToUse * 255) / 100),
+    };
+
+    return this.updateState(state);
+  }
+
   public async setColor(color: Led): Promise<void> {
     const state: PartialWLEDState = {
       seg: [
