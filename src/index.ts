@@ -62,7 +62,7 @@ export default class WledClient {
     return this.updateState(state);
   }
 
-  public setBrightnessPercentage(percentage: number): Promise<void> {
+  public setBrightnessPercent(percentage: number): Promise<void> {
     const percentageToUse = Math.min(100, Math.max(0, percentage));
 
     const state = {
