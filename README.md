@@ -67,7 +67,6 @@ setInterval(() => {
 - `getLedCount(): Promise<number>`: Retrieves the amount of LEDs from the WLED device.
 - `isOn(): Promise<boolean>`: Retrieves the on/off state of the WLED device.
 
-
 - `getAllData(): Promise<WLEDFullResponse>`: Retrieves all data from the WLED device.
 - `getState(): Promise<WLEDState>`: Retrieves the current state of the WLED device.
 - `getEffects(): Promise<string[]>`: Retrieves the available effects from the WLED device.
