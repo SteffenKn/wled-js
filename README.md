@@ -57,11 +57,17 @@ setInterval(() => {
 #### JSON API Methods
 
 - `turn(on: boolean): Promise<void>`: Turns on/off the LED strip.
+- `setLight(color: Led, brightness: number): Promise<void>`: Sets the color and brightness of the LED strip.
+- `setLightPercent(color: Led, brightness: number): Promise<void>`: Sets the color and brightness of the LED strip in percent.
 - `setColor(color: Led): Promise<void>`: Sets the color of the whole LED strip.
 - `setEffect(effect: string | number): Promise<void>`: Sets the effect of the LED strip (This can be the name or the index of the effect).
 - `setBrightness(brightness: number): Promise<void>`: Sets the brightness of the LED strip.
+- `setBrightnessPercent(brightness: number): Promise<void>`: Sets the brightness of the LED strip in percent.
 - `updateState(state: PartialWLEDState): Promise<void>`: Updates the state of the WLED device.
 - `getLedCount(): Promise<number>`: Retrieves the amount of LEDs from the WLED device.
+- `isOn(): Promise<boolean>`: Retrieves the on/off state of the WLED device.
+
+
 - `getAllData(): Promise<WLEDFullResponse>`: Retrieves all data from the WLED device.
 - `getState(): Promise<WLEDState>`: Retrieves the current state of the WLED device.
 - `getEffects(): Promise<string[]>`: Retrieves the available effects from the WLED device.
