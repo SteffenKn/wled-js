@@ -101,6 +101,12 @@ export default class WledClient {
     return this.updateState(state);
   }
 
+  public setLightPercent(color: Led, brightnessPercent: number): Promise<void> {
+    const brightness = Math.round((brightnessPercent * 255) / 100);
+
+    return this.setLight(color, brightness);
+  }
+
   public setEffect(effect: number): Promise<void>;
   public setEffect(effect: string): Promise<void>;
   public async setEffect(effect: string | number): Promise<void> {
