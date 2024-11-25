@@ -157,6 +157,7 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: dist-22.x-${{ github.run_id }}
+          path: dist/
 
       # Publish to npm
       - name: Publish to npm
