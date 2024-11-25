@@ -55,6 +55,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0 # Klont das gesamte Repository, einschließlich aller Tags
 
       # Set up Node.js
       - name: Set up Node.js
@@ -134,6 +135,33 @@ jobs:
           echo "Final version: $FINAL_VERSION"
           echo "final_version=$FINAL_VERSION" >> $GITHUB_OUTPUT
 
+
+      # Install GitHub CLI (needed for getting latest release)
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh
+
+      # Get latest release tag
+      - name: Get latest release tag
+        id: get_latest_release
+        run: |
+          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+          latest_release=$(gh release list --limit 1 --exclude-pre-releases --json tagName --jq '.[0].tagName')
+          echo "Latest release tag: $latest_release"
+          echo "latest_release=$latest_release" >> $GITHUB_OUTPUT
+
+      # Get commits since latest release (for release notes)
+      - name: Get commits since latest release
+        id: get_commits
+        run: |
+          latest_release=${{ steps.get_latest_release.outputs.latest_release }}
+          commits=$(git log $latest_release..HEAD --pretty=format:"- %s (%h)")
+          echo "Commits since latest release:"
+          echo "$commits"
+          delimiter="$(openssl rand -hex 8)"
+          echo "commits<<${delimiter}" >> "$GITHUB_OUTPUT"
+          echo "$commits" >> "$GITHUB_OUTPUT"
+          echo "${delimiter}" >> "$GITHUB_OUTPUT"
+
       # Update package.json
       - name: Update package.json
         run: |
@@ -183,9 +211,12 @@ jobs:
       - name: Create GitHub Release
         uses: actions/create-release@v1
         with:
-          tag_name: 'v${{ steps.versioning.outputs.final_version }}'
-          release_name: 'Release v${{ steps.versioning.outputs.final_version }}'
-          body: 'This is the release v${{ steps.versioning.outputs.final_version }}.'
+          tag_name: "v${{ steps.versioning.outputs.final_version }}"
+          release_name: "Release v${{ steps.versioning.outputs.final_version }}"
+          body: |
+            This is the release v${{ steps.versioning.outputs.final_version }}.
+            ## Commits since the last release:
+            ${{ steps.get_commits.outputs.commits }}
           draft: false
           prerelease: ${{ steps.check_commit.outputs.is_beta != '' }}
         env:
