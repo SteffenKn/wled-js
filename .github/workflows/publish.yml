@@ -2,6 +2,7 @@ name: 'Publish Release'
 
 #  TODO:
 #  Filter out release commits and commits without emoji
+# Remove beta tag if stable release is published
 
 # To use this workflow:
 # 1. Create a npm token and add it as a repository secret named NPM_TOKEN
