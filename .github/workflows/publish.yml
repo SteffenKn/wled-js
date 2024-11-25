@@ -1,5 +1,8 @@
 name: 'Publish Release'
 
+#  TODO:
+#  Filter out release commits and commits without emoji
+
 # To use this workflow:
 # 1. Create a npm token and add it as a repository secret named NPM_TOKEN
 # 2. Make sure GH actions has write access to the repository:  Settings → Actions → General.
